@@ -17,12 +17,12 @@ const Form = () => {
   return (
     <FormWrapper>
       <UserDataWrapper>
-        <FormInput id="name" placeholder="Иван" inputLabel="Ваше имя *" />
-        <FormInput id="phone" placeholder="+7 (000) 000-00-00" inputLabel="Номер телефона *" />
-        <FormInput id="email" placeholder="example@skdesign.ru" inputLabel="E-mail *" />
-        <FormInput id="profile-link" placeholder="instagram.com/skdesign" inputLabel="Ссылка на профиль *" />
+        <FormInput id="name" placeholder="Иван" inputLabel="Ваше имя *" required={true} />
+        <FormInput id="phone" placeholder="+7 (000) 000-00-00" inputLabel="Номер телефона *" required={true} />
+        <FormInput id="email" placeholder="example@skdesign.ru" inputLabel="E-mail *" required={true} />
+        <FormInput id="profile-link" placeholder="instagram.com/skdesign" inputLabel="Ссылка на профиль *" required={true} />
       </UserDataWrapper>
-      <FormSelect inputWidth="100%" id="city" placeholder="" inputLabel="Выберите город *"/>
+      <FormSelect inputWidth="100%" id="city" placeholder="" inputLabel="Выберите город *" required={true} />
       <FormInput inputWidth="100%" id="organization" placeholder="SK Design" inputLabel="Название организации/студии" />
       <HiddenFields>
         <>

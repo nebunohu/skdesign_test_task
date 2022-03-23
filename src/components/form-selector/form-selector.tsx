@@ -7,6 +7,7 @@ type TFormSelect = {
   inputLabel: string;
   placeholder: string;
   inputWidth?: string;
+  required?: boolean;
 }
 
 const StyledFormControl = styled(FormControl)(({theme}) => ({
@@ -25,13 +26,13 @@ const StyledFormControl = styled(FormControl)(({theme}) => ({
   }
 }));
 
-const FormSelect:FC<TFormSelect> = ({ id, inputLabel, placeholder, inputWidth }) => {
+const FormSelect:FC<TFormSelect> = ({ id, inputLabel, placeholder, inputWidth, required }) => {
   return (
     <StyledFormControl sx={{width: inputWidth}}>
       <InputLabel htmlFor={id}>{inputLabel}</InputLabel>
       <Select
         id={id}
-        required
+        required={required ? true : false}
         placeholder={placeholder}
         label={inputLabel}
       />
