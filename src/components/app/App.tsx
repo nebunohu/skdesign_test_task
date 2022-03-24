@@ -1,4 +1,3 @@
-import React from 'react';
 import AppWrapper from './app-wrapper';
 
 import Form from '../form/form';
