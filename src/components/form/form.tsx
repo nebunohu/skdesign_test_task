@@ -1,4 +1,5 @@
 import { useState, ChangeEvent, FormEvent } from 'react'; 
+import { useSelector, useDispatch } from '../../hooks';
 import FormWrapper from "./form-wrapper";
 import FormInput from "../form-input/form-input";
 
@@ -11,8 +12,11 @@ import StyledButton from '../styled-button/styled-button';
 // Data 
 import * as cities from '../../data/cities.json'; 
 import * as sources from '../../data/sources.json';
+import { saveForm } from '../../redux/actions/form-actions';
 
 const Form = () => {
+  const { form } = useSelector(store => store);
+  const dispatch = useDispatch();
   const [isHidden, setIsHidden] = useState(true);
   const clickHandler = () => {
     setIsHidden(!isHidden);
@@ -53,6 +57,7 @@ const Form = () => {
     }
     setError(tempError);
     setNoErrors(checkErrors(tempError));
+    dispatch(saveForm({...form, [name]: value}));
   }
 
   const [noErrors, setNoErrors] = useState(true);
@@ -70,7 +75,7 @@ const Form = () => {
   const onSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setTimeout(() => {
-      console.log("form")
+      console.log(form);
     }, 2000);
   }
 
@@ -117,7 +122,7 @@ const Form = () => {
           <div style={{marginBottom: "20px", cursor: "pointer"}} onClick={clickHandler}>Показать дополнительные поля <img src={`${selectArrow}`} alt=''></img></div>
           {!isHidden && <>
             <FormInput inputWidth="100%" id="recipient" placeholder="ФИО" inputLabel="Получатель" />
-            <FormSelect inputWidth="100%" id="city" placeholder="" inputLabel="Откуда узнали про нас" data={Array.from(sources)}/>
+            <FormSelect inputWidth="100%" id="source" placeholder="" inputLabel="Откуда узнали про нас" data={Array.from(sources)}/>
             </>}
         </>
       </HiddenFields>

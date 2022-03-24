@@ -1,7 +1,17 @@
-export const SEND_FORM: "SEND_FORM" = "SEND_FORM";
+import { TFormState } from "../reducers/root";
 
-export type TSendForm = {
-  type: typeof SEND_FORM
+export const SAVE_FORM: "SAVE_FORM" = "SAVE_FORM";
+
+export type TSaveForm = {
+  type: typeof SAVE_FORM
+  form: TFormState;
 }
 
-export type TFormActions = TSendForm; 
+export const saveForm = (form: TFormState): TSaveForm => {
+  return {
+    type: SAVE_FORM,
+    form
+  }
+}
+
+export type TFormActions = TSaveForm; 
