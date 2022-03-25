@@ -11,6 +11,7 @@ type TFormInput = {
   validationTemplate?: object;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   error?: {message: string};
+  value?: string;
 }
 
 const StyledFormControl = styled(FormControl)(({theme}) => ({
@@ -21,7 +22,10 @@ const StyledFormControl = styled(FormControl)(({theme}) => ({
   "& .MuiInputLabel-root.Mui-focused": {
     color: "rgba(0, 134, 168, 1)",
   },
-  "& .Mui-focused > .MuiOutlinedInput-notchedOutline": {
+  "& .Mui-focused.MuiOutlinedInput-notchedOutline": {
+    border: "2px solid rgba(0, 134, 168, 1)"
+  },
+  "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
     border: "2px solid rgba(0, 134, 168, 1)"
   },
   "& .MuiInputLabel-root.Mui-error": {
@@ -39,7 +43,7 @@ const StyledFormControl = styled(FormControl)(({theme}) => ({
   
 }));
 
-const FormInput:FC<TFormInput> = ({ id, inputLabel, placeholder, inputWidth, required, validationTemplate, onChange, error }) => {
+const FormInput:FC<TFormInput> = ({ id, inputLabel, placeholder, inputWidth, required, validationTemplate, onChange, error, value }) => {
   
 
   return (
@@ -57,6 +61,7 @@ const FormInput:FC<TFormInput> = ({ id, inputLabel, placeholder, inputWidth, req
         required={required ? true : false}
         onChange={onChange}
         error={error?.message ? true : false}
+        value={value}
       />
       <FormHelperText id={id} error={error?.message ? true : false}>{error?.message}</FormHelperText>
     </StyledFormControl>

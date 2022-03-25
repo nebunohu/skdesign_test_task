@@ -1,4 +1,4 @@
-import { SAVE_FORM, TFormActions } from './../actions/form-actions';
+import { SAVE_FORM, TFormActions, CLEAR_FORM } from './../actions/form-actions';
 import { combineReducers } from "redux";
 
 export type TFormState = {
@@ -29,6 +29,9 @@ export const formReducer = (state = formInitialState, action: TFormActions): TFo
       return {
         ...action.form
       }
+    }
+    case CLEAR_FORM: {
+      return formInitialState;
     }
     default: return state;
   }

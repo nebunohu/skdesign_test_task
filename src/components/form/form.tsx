@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, FormEvent } from 'react'; 
+import { useState, ChangeEvent, FormEvent, useRef, ReactNode } from 'react'; 
 import { useSelector, useDispatch } from '../../hooks';
 import FormWrapper from "./form-wrapper";
 import FormInput from "../form-input/form-input";
@@ -12,15 +12,18 @@ import StyledButton from '../styled-button/styled-button';
 // Data 
 import * as cities from '../../data/cities.json'; 
 import * as sources from '../../data/sources.json';
-import { saveForm } from '../../redux/actions/form-actions';
+import { saveForm, clearForm } from '../../redux/actions/form-actions';
+import { SelectChangeEvent } from '@mui/material';
 
 const Form = () => {
   const { form } = useSelector(store => store);
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
   const [isHidden, setIsHidden] = useState(true);
   const clickHandler = () => {
     setIsHidden(!isHidden);
   }
+  const formRef = useRef(null);
 
   const [error, setError] = useState({
     name: {message: ''}, 
@@ -28,7 +31,7 @@ const Form = () => {
     email: {message: ''},
     profileLink: {message: ''},
   });
-  const onChangeHandler = async (e: ChangeEvent<HTMLInputElement>, validationTemplate?: RegExp) => {
+  const onChangeHandler = (e: ChangeEvent<HTMLInputElement>, validationTemplate?: RegExp) => {
     e.preventDefault();
 
     const value = e.target.value;
@@ -60,6 +63,13 @@ const Form = () => {
     dispatch(saveForm({...form, [name]: value}));
   }
 
+  const onSelectChange = (e: SelectChangeEvent<string>, child?: ReactNode) => {
+    e.preventDefault();
+    const value = e.target.value;
+    const name = e.target.name;
+    dispatch(saveForm({...form, [name]: value}));
+  }
+
   const [noErrors, setNoErrors] = useState(true);
   const checkErrors = (testError: typeof error) => {
     type TKey = keyof typeof error;
@@ -74,13 +84,19 @@ const Form = () => {
 
   const onSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
     setTimeout(() => {
-      console.log(form);
+      console.log(JSON.stringify(form));
+      setIsLoading(false);
+      dispatch(clearForm());
     }, 2000);
   }
 
   return (
-    <FormWrapper onSubmit={onSubmitHandler}>
+    <FormWrapper 
+      ref={formRef}
+      onSubmit={onSubmitHandler}
+    >
       <UserDataWrapper>
         <FormInput 
           id="name" 
@@ -89,6 +105,7 @@ const Form = () => {
           required={true} 
           onChange={(e: ChangeEvent<HTMLInputElement>) => onChangeHandler(e)} 
           error={{message: error.name.message}} 
+          value={form.name}
         />
         <FormInput 
           id="phone" 
@@ -97,6 +114,7 @@ const Form = () => {
           required={true} 
           onChange={(e: ChangeEvent<HTMLInputElement>) => onChangeHandler(e, /\+7 \(\d\d\d\) \d\d\d-\d\d-\d\d/)} 
           error={{message: error.number.message}} 
+          value={form.phone}
         />
         <FormInput 
           id="email" 
@@ -105,28 +123,61 @@ const Form = () => {
           required={true} 
           onChange={(e: ChangeEvent<HTMLInputElement>) => onChangeHandler(e, /.+@.+\..+/)} 
           error={{message: error.email.message}} 
+          value={form.email}
         />
         <FormInput 
-          id="profile-link" 
+          id="profileLink" 
           placeholder="instagram.com/skdesign" 
           inputLabel="Ссылка на профиль *" 
           required={true} 
           onChange={(e: ChangeEvent<HTMLInputElement>) => onChangeHandler(e)} 
           error={{message: error.profileLink.message}} 
+          value={form.profileLink}
         />
       </UserDataWrapper>
-      <FormSelect inputWidth="100%" id="city" placeholder="" inputLabel="Выберите город *" required={true} data={Array.from(cities).map(el => el.name)} />
-      <FormInput inputWidth="100%" id="organization" placeholder="SK Design" inputLabel="Название организации/студии" />
+      <FormSelect 
+        inputWidth="100%" 
+        id="city" 
+        placeholder="" 
+        inputLabel="Выберите город *" 
+        required={true} 
+        data={Array.from(cities).map(el => el.name)} 
+        value={form.city} 
+        onChange={onSelectChange} 
+      />
+      <FormInput 
+        inputWidth="100%" 
+        id="organization" 
+        placeholder="SK Design" 
+        inputLabel="Название организации/студии" 
+        value={form.organization} 
+        onChange={(e: ChangeEvent<HTMLInputElement>) => onChangeHandler(e)} 
+      />
       <HiddenFields>
         <>
           <div style={{marginBottom: "20px", cursor: "pointer"}} onClick={clickHandler}>Показать дополнительные поля <img src={`${selectArrow}`} alt=''></img></div>
           {!isHidden && <>
-            <FormInput inputWidth="100%" id="recipient" placeholder="ФИО" inputLabel="Получатель" />
-            <FormSelect inputWidth="100%" id="source" placeholder="" inputLabel="Откуда узнали про нас" data={Array.from(sources)}/>
+            <FormInput 
+              inputWidth="100%" 
+              id="recipient" 
+              placeholder="ФИО" 
+              inputLabel="Получатель" 
+              value={form.recipient} 
+              onChange={(e: ChangeEvent<HTMLInputElement>) => onChangeHandler(e)} 
+            />
+            <FormSelect 
+              inputWidth="100%" 
+              id="source" 
+              placeholder="" 
+              inputLabel="Откуда узнали про нас" 
+              data={Array.from(sources)} 
+              value={form.source}
+              onChange={onSelectChange} 
+            />
             </>}
         </>
       </HiddenFields>
-      <StyledButton type="submit" disabled={!noErrors} />
+      <StyledButton type="submit" disabled={!noErrors} loading={isLoading} />
     </FormWrapper>
   )
 }
