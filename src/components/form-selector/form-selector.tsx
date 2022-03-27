@@ -21,8 +21,8 @@ const StyledFormControl = styled(FormControl)(() => ({
   "& .MuiInputLabel-root.Mui-focused": {
     color: "rgba(0, 134, 168, 1)",
   },
-  '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-    border: "2px solid rgba(0, 134, 168, 1)"
+  '& > .Mui-focused > .MuiOutlinedInput-notchedOutline': {
+    border: "2px solid rgba(0, 134, 168, 1) !important"
   },
   '& .Mui-focused > .MuiOutlinedInput-notchedOutline': {
     border: "2px solid rgba(0, 134, 168, 1)"

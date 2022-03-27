@@ -2,6 +2,7 @@ import { useState, ChangeEvent, FormEvent, useRef, ReactNode } from 'react';
 import { useSelector, useDispatch } from '../../hooks';
 import FormWrapper from "./form-wrapper";
 import FormInput from "../form-input/form-input";
+import PhoneInput from '../phone-input/phone-input';
 
 import UserDataWrapper from "./user-data-wrapper";
 import HiddenFields from "../hidden-fields/hidden-fields";
@@ -14,12 +15,14 @@ import * as cities from '../../data/cities.json';
 import * as sources from '../../data/sources.json';
 import { saveForm, clearForm } from '../../redux/actions/form-actions';
 import { SelectChangeEvent } from '@mui/material';
+import { TFormState } from '../../redux/reducers/root';
 
 const Form = () => {
   const { form } = useSelector(store => store);
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [isHidden, setIsHidden] = useState(true);
+  const [emptyFields, setEmptyFields] = useState(true);
   const clickHandler = () => {
     setIsHidden(!isHidden);
   }
@@ -34,33 +37,46 @@ const Form = () => {
   const onChangeHandler = (e: ChangeEvent<HTMLInputElement>, validationTemplate?: RegExp) => {
     e.preventDefault();
 
-    const value = e.target.value;
+    let value = e.target.value;
     const name = e.target.name;
+    const tempForm = {...form};
     let tempError = {...error}
     if( typeof validationTemplate === 'undefined' ) {
-      if( value.length < 2 && name === 'name' ) {
+      if( value.length < 2 && value.length !== 0 && name === 'name' ) {
         tempError.name.message = 'Имя должно быть длиной не менее 2 символов';
-      } else if ( value.length < 3 && name === 'profile-link' ) {
+      } else if ( value.length < 3 && value.length !== 0 && name === 'profileLink' ) {
         tempError.profileLink.message = 'Ссылка должна быть длиной не менее 3 символов';
       } else {
         tempError = {...tempError, profileLink: {message: ''}, name: {message: ''}};
       }
     } else if (name === "phone") {
-      if (value.match(validationTemplate)) {
-        tempError.number.message = '';
-      } else {
+      
+      if (value.length < 18 && value.length > 4) {
         tempError.number.message = 'Введите номер в формате +7 (ХХХ) ХХХ-ХХ-ХХ';
-      }
+      } else {
+        tempError.number.message = '';
+      } 
     } else if (name === "email") {
-      if (value.match(validationTemplate)) {
+      if (value.match(validationTemplate) || value.length === 0) {
         tempError.email.message = '';
       } else {
         tempError.email.message = 'Неверный формат E-mail';
       }
     }
+    tempForm[name] = value;
     setError(tempError);
+    setEmptyFields(checkEmptyFields(tempForm));
     setNoErrors(checkErrors(tempError));
-    dispatch(saveForm({...form, [name]: value}));
+    dispatch(saveForm(tempForm));
+  }
+
+  const checkEmptyFields = (checkForm: TFormState) => {
+    type TFormKey = keyof TFormState;
+    let key: TFormKey;
+    for (key in checkForm) {
+      if(checkForm[key]) return false;
+    }
+    return true;
   }
 
   const onSelectChange = (e: SelectChangeEvent<string>, child?: ReactNode) => {
@@ -107,15 +123,15 @@ const Form = () => {
           error={{message: error.name.message}} 
           value={form.name}
         />
-        <FormInput 
-          id="phone" 
-          placeholder="+7 (000) 000-00-00" 
-          inputLabel="Номер телефона *" 
-          required={true} 
-          onChange={(e: ChangeEvent<HTMLInputElement>) => onChangeHandler(e, /\+7 \(\d\d\d\) \d\d\d-\d\d-\d\d/)} 
-          error={{message: error.number.message}} 
-          value={form.phone}
-        />
+        <PhoneInput 
+            id="phone"
+            placeholder="+7 (000) 000-00-00" 
+            inputLabel="Номер телефона *" 
+            required={true} 
+            onChange={(e: ChangeEvent<HTMLInputElement>) => onChangeHandler(e, /\+7 \(\d\d\d\) \d\d\d-\d\d-\d\d/)} 
+            error={error.number} 
+            value={form.phone}
+          />
         <FormInput 
           id="email" 
           placeholder="example@skdesign.ru" 
@@ -177,7 +193,7 @@ const Form = () => {
             </>}
         </>
       </HiddenFields>
-      <StyledButton type="submit" disabled={!noErrors} loading={isLoading} />
+      <StyledButton type="submit" disabled={!noErrors || emptyFields} loading={isLoading} />
     </FormWrapper>
   )
 }
