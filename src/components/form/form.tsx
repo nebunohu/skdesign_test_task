@@ -48,11 +48,7 @@ const Form = () => {
       } else if ( value.length < 3 && value.length !== 0 && name === 'profileLink' ) {
         tempError.profileLink.message = 'Ссылка должна быть длиной не менее 3 символов';
       } else if (value.length < 18 && value.length > 4 && name === "phone") {
-        //if (value.length < 18 && value.length > 4) {
-          tempError.number.message = 'Введите номер в формате +7 (ХХХ) ХХХ-ХХ-ХХ';
-        //} else {
-        //  tempError.number.message = '';
-        //} 
+          tempError.number.message = 'Введите номер в формате +7 (ХХХ) ХХХ-ХХ-ХХ'; 
       } else {
         tempError = {...tempError, profileLink: {message: ''}, name: {message: ''}, number: {message: ''}};
       }
@@ -81,22 +77,13 @@ const Form = () => {
   }
 
   const checkRequiredFields = () => {
-    //type TFormKey = keyof TFormState;
     const checkForm = document.querySelector("form");
     const formArray = Array.from(checkForm!.elements);
-    for(let i = 0; i < formArray.length; i++) {
-      if(formArray[i]['required']) {
-        if(formArray[i]['name'] === 'city') {
-          console.log('here');
-        }
-        console.log(formArray[i]['value']);
-        if (formArray[i]['value'] === '') return false;
-      }
+    
+    for (let i = 0; i < formArray.length; i++) {
+      if(formArray[i]['required'] && formArray[i]['value'] === '') return false;
     }
-    //let key: TFormKey;
-    /*for (key in checkForm) {
-      if(checkForm[key]) return false;
-    }*/
+    
     return true;
   }
 
@@ -104,7 +91,7 @@ const Form = () => {
     e.preventDefault();
     const value = e.target.value;
     const name = e.target.name;
-    setRequeredNotEmpty(checkRequiredFields());
+    setTimeout(()=> setRequeredNotEmpty(checkRequiredFields()), 0);
     dispatch(saveForm({...form, [name]: value}));
   }
 
@@ -127,6 +114,7 @@ const Form = () => {
       console.log(JSON.stringify(form));
       setIsLoading(false);
       dispatch(clearForm());
+      setEmptyFields(true);
     }, 2000);
   }
 
