@@ -8,16 +8,18 @@ import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { applyMiddleware, createStore, compose } from 'redux';
 import { rootReducer } from './redux/reducers/root';
+import FontStyles from './components/font-styles/font-styles';
+import GlobalStyles from './components/global-styles/global-styles';
 
 const enhancers = compose(applyMiddleware(thunk));
 export const store = createStore(rootReducer, enhancers)
 
-ReactDOM.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </React.StrictMode>,
+ReactDOM.render( 
+  <Provider store={store}>
+    <FontStyles />
+    <GlobalStyles />
+    <App />
+  </Provider>,
   document.getElementById('root')
 );
 

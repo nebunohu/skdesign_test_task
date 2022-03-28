@@ -1,13 +1,14 @@
 import TextAreaWrapper from "./text-area-wrapper";
 import logo from '../../images/logo.svg';
+import TextAreaHeader from "../text-area-header/text-area-header";
 
 const TextArea = () => {
   return (
     <TextAreaWrapper>
       <img src={`${logo}`} alt='logo' />
-      <h1>
+      <TextAreaHeader>
         Оставьте заявку и станьте частью нашей команды
-      </h1>
+      </TextAreaHeader>
       <p>
         Компания SK Design приглашает к взаимовыгодному сотрудничеству креативных дизайнеров, архитекторов и декораторов, 
         дизайн-бюро и интерьерные студии — все, кто дизайн интерьера сделали своим призванием.

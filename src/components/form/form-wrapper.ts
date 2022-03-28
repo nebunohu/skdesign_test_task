@@ -16,7 +16,13 @@ const FormWrapper = styled.form`
   flex: none;
   order: 1;
   flex-grow: 0;
-  margin: 0px 60px;
+  margin: 30px 60px;
+
+  @media screen and (max-width: 390px) {
+    width: 90%;
+    box-sizing: border-box;
+    margin: 20px 0;
+  }
 `;
 
 export default FormWrapper

@@ -21,6 +21,6 @@
     "jsx": "react-jsx",
     "noImplicitAny": false
   },
-  "include": ["**/*.ts", "**/*.tsx"]
+  "include": ["**/*.ts", "**/*.tsx", "**/*.ttf"]
   
 }

@@ -23,6 +23,7 @@ const Form = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isHidden, setIsHidden] = useState(true);
   const [emptyFields, setEmptyFields] = useState(true);
+  const [requeredNotEmpty, setRequeredNotEmpty] = useState(false);
   const clickHandler = () => {
     setIsHidden(!isHidden);
   }
@@ -46,17 +47,16 @@ const Form = () => {
         tempError.name.message = 'Имя должно быть длиной не менее 2 символов';
       } else if ( value.length < 3 && value.length !== 0 && name === 'profileLink' ) {
         tempError.profileLink.message = 'Ссылка должна быть длиной не менее 3 символов';
+      } else if (value.length < 18 && value.length > 4 && name === "phone") {
+        //if (value.length < 18 && value.length > 4) {
+          tempError.number.message = 'Введите номер в формате +7 (ХХХ) ХХХ-ХХ-ХХ';
+        //} else {
+        //  tempError.number.message = '';
+        //} 
       } else {
-        tempError = {...tempError, profileLink: {message: ''}, name: {message: ''}};
+        tempError = {...tempError, profileLink: {message: ''}, name: {message: ''}, number: {message: ''}};
       }
-    } else if (name === "phone") {
-      
-      if (value.length < 18 && value.length > 4) {
-        tempError.number.message = 'Введите номер в формате +7 (ХХХ) ХХХ-ХХ-ХХ';
-      } else {
-        tempError.number.message = '';
-      } 
-    } else if (name === "email") {
+     } else if (name === "email") {
       if (value.match(validationTemplate) || value.length === 0) {
         tempError.email.message = '';
       } else {
@@ -66,6 +66,7 @@ const Form = () => {
     tempForm[name] = value;
     setError(tempError);
     setEmptyFields(checkEmptyFields(tempForm));
+    setRequeredNotEmpty(checkRequiredFields());
     setNoErrors(checkErrors(tempError));
     dispatch(saveForm(tempForm));
   }
@@ -79,10 +80,31 @@ const Form = () => {
     return true;
   }
 
-  const onSelectChange = (e: SelectChangeEvent<string>, child?: ReactNode) => {
+  const checkRequiredFields = () => {
+    //type TFormKey = keyof TFormState;
+    const checkForm = document.querySelector("form");
+    const formArray = Array.from(checkForm!.elements);
+    for(let i = 0; i < formArray.length; i++) {
+      if(formArray[i]['required']) {
+        if(formArray[i]['name'] === 'city') {
+          console.log('here');
+        }
+        console.log(formArray[i]['value']);
+        if (formArray[i]['value'] === '') return false;
+      }
+    }
+    //let key: TFormKey;
+    /*for (key in checkForm) {
+      if(checkForm[key]) return false;
+    }*/
+    return true;
+  }
+
+  const onSelectChange = (e: SelectChangeEvent<string>) => {
     e.preventDefault();
     const value = e.target.value;
     const name = e.target.name;
+    setRequeredNotEmpty(checkRequiredFields());
     dispatch(saveForm({...form, [name]: value}));
   }
 
@@ -128,7 +150,7 @@ const Form = () => {
             placeholder="+7 (000) 000-00-00" 
             inputLabel="Номер телефона *" 
             required={true} 
-            onChange={(e: ChangeEvent<HTMLInputElement>) => onChangeHandler(e, /\+7 \(\d\d\d\) \d\d\d-\d\d-\d\d/)} 
+            onChange={(e: ChangeEvent<HTMLInputElement>) => onChangeHandler(e)} 
             error={error.number} 
             value={form.phone}
           />
@@ -193,7 +215,7 @@ const Form = () => {
             </>}
         </>
       </HiddenFields>
-      <StyledButton type="submit" disabled={!noErrors || emptyFields} loading={isLoading} />
+      <StyledButton type="submit" disabled={!noErrors || emptyFields || !requeredNotEmpty} loading={isLoading} />
     </FormWrapper>
   )
 }
